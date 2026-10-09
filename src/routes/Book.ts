@@ -121,5 +121,99 @@ router.put('/:bookId', ValidateId('bookId'), ValidateJoi(Schemas.book.update), c
 // Comprobamos primero que el ID tenga un formato valido
 router.delete('/:bookId', ValidateId('bookId'), controller.deleteBook);
 
+// ================= RUTAS PARA GESTIONAR TAGS =================
+
+/**
+ * @openapi
+ * /books/{bookId}/tags:
+ *   post:
+ *     tags: [Books]
+ *     summary: Añade un tag al libro
+ *     parameters:
+ *       - in: path
+ *         name: bookId
+ *         required: true
+ *         schema: { type: string, pattern: '^[0-9a-fA-F]{24}$' }
+ *         example: 6ab2d1c247a7d5e4fe530049
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [tag]
+ *             properties:
+ *               tag:
+ *                 type: string
+ *                 enum: [ciencia-ficcion, fantasia, novela, ensayo, poesia, historia]
+ *                 example: fantasia
+ *     responses:
+ *       200: { $ref: '#/components/responses/BookOne' }
+ *       400: { $ref: '#/components/responses/BadRequest' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ *       422: { $ref: '#/components/responses/Unprocessable' }
+ */
+router.post('/:bookId/tags', ValidateId('bookId'), ValidateJoi(Schemas.book.addTag), controller.addTag);
+
+/**
+ * @openapi
+ * /books/{bookId}/tags:
+ *   put:
+ *     tags: [Books]
+ *     summary: Reemplaza la lista completa de tags del libro
+ *     parameters:
+ *       - in: path
+ *         name: bookId
+ *         required: true
+ *         schema: { type: string, pattern: '^[0-9a-fA-F]{24}$' }
+ *         example: 6ab2d1c247a7d5e4fe530049
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [tags]
+ *             properties:
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   enum: [ciencia-ficcion, fantasia, novela, ensayo, poesia, historia]
+ *                 example: [novela, historia]
+ *     responses:
+ *       200: { $ref: '#/components/responses/BookOne' }
+ *       400: { $ref: '#/components/responses/BadRequest' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ *       422: { $ref: '#/components/responses/Unprocessable' }
+ */
+router.put('/:bookId/tags', ValidateId('bookId'), ValidateJoi(Schemas.book.setTags), controller.replaceTags);
+
+/**
+ * @openapi
+ * /books/{bookId}/tags/{tag}:
+ *   delete:
+ *     tags: [Books]
+ *     summary: Quita un tag del libro
+ *     parameters:
+ *       - in: path
+ *         name: bookId
+ *         required: true
+ *         schema: { type: string, pattern: '^[0-9a-fA-F]{24}$' }
+ *         example: 6ab2d1c247a7d5e4fe530049
+ *       - in: path
+ *         name: tag
+ *         required: true
+ *         schema: { type: string }
+ *         example: historia
+ *     responses:
+ *       200: { $ref: '#/components/responses/BookOne' }
+ *       400: { $ref: '#/components/responses/BadRequest' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ */
+router.delete('/:bookId/tags/:tag', ValidateId('bookId'), controller.removeTag);
+
+// =============================================================
+
 // Exportamos el router para poder utilizar estas rutas en la aplicacion
 export = router;
